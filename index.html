@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kraken Bot</title>
+<meta name="description" content="Kraken Bot — an autopilot for Seafight: level progression, daily missions, bonus maps and chests, with your mouse and keyboard.">
+<link rel="icon" href="kraken.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070b10; --bg2: #0d141c; --card: #111a24; --line: #1f2d3b;
+    --text: #e7edf3; --muted: #93a3b4; --gold: #e8b64a; --gold2: #b8862a; --sea: #2fb3c4;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(7,11,16,.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; gap: 18px; height: 60px; }
+  nav .logo { display: flex; align-items: center; gap: 10px; font: 800 18px Cinzel, serif; letter-spacing: 1px; text-decoration: none; }
+  nav .logo img { width: 32px; height: 32px; }
+  nav .links { margin-left: auto; display: flex; gap: 18px; font-size: 14px; color: var(--muted); }
+  nav .links a { text-decoration: none; } nav .links a:hover { color: var(--text); }
+  .lang { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .lang button { background: none; border: 0; color: var(--muted); padding: 5px 10px; cursor: pointer; font: 600 12px Inter; }
+  .lang button.on { background: var(--card); color: var(--gold); }
+
+  header { position: relative; overflow: hidden; padding: 90px 0 80px; text-align: center;
+    background: radial-gradient(ellipse at 50% -10%, rgba(47,179,196,.25), transparent 60%), radial-gradient(ellipse at 50% 120%, rgba(232,182,74,.12), transparent 60%); }
+  header img.big { width: 140px; height: 140px; filter: drop-shadow(0 10px 30px rgba(47,179,196,.35)); }
+  h1 { font: 800 clamp(38px, 7vw, 68px)/1.05 Cinzel, serif; margin: 18px 0 10px; letter-spacing: 2px;
+    background: linear-gradient(180deg, #fff3d2, var(--gold) 60%, var(--gold2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header p.sub { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 680px; margin: 0 auto 30px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; border-radius: 12px; font-weight: 600; text-decoration: none; }
+  .btn.gold { background: linear-gradient(180deg, #f3c862, var(--gold2)); color: #1a1205; box-shadow: 0 8px 30px rgba(232,182,74,.3); }
+  .btn.gold:hover { filter: brightness(1.08); }
+  .btn.ghost { border: 1px solid var(--line); color: var(--text); }
+  .meta { margin-top: 16px; font-size: 13px; color: var(--muted); }
+
+  section { padding: 70px 0; border-top: 1px solid var(--line); }
+  h2 { font: 700 clamp(26px, 4vw, 36px) Cinzel, serif; text-align: center; margin: 0 0 10px; color: var(--gold); }
+  .lead { text-align: center; color: var(--muted); max-width: 640px; margin: 0 auto 40px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .card .ico { font-size: 26px; }
+  .card h3 { margin: 8px 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .steps { counter-reset: s; display: grid; gap: 14px; max-width: 720px; margin: 0 auto; }
+  .steps li { list-style: none; counter-increment: s; position: relative; padding: 16px 18px 16px 62px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  .steps li::before { content: counter(s); position: absolute; left: 16px; top: 14px; width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 700; color: #1a1205; background: var(--gold); }
+  .steps { padding: 0; }
+
+  .faq { max-width: 760px; margin: 0 auto; display: grid; gap: 10px; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+
+  .cta { text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(47,179,196,.18), transparent 70%); }
+  footer { padding: 30px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; text-align: center; }
+  footer p { margin: 4px 0; }
+  @media (max-width: 640px) { nav .links { display: none; } header { padding: 60px 0; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#"><img src="kraken.png" alt=""> KRAKEN BOT</a>
+    <div class="links">
+      <a href="#features" data-t="nFeatures">Features</a>
+      <a href="#install" data-t="nInstall">Install</a>
+      <a href="#faq" data-t="nFaq">FAQ</a>
+    </div>
+    <div class="lang"><button data-l="en" class="on">EN</button><button data-l="ro">RO</button></div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <img class="big" src="kraken.png" alt="Kraken Bot">
+    <h1>Kraken Bot</h1>
+    <p class="sub" data-t="sub">Your autopilot for Seafight. Press START and it sails, fights, collects and finishes missions for you — hour after hour.</p>
+    <a class="btn gold dl" href="#"><span>⬇</span> <span data-t="download">Download for Windows</span></a>
+    <div class="meta"><span data-t="meta">Windows 10 / 11 · 64-bit · free updates</span> · <span class="ver"></span></div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <h2 data-t="fTitle">What it does</h2>
+    <p class="lead" data-t="fLead">Everything you would do yourself, done the same way a player does it: with the mouse and the keyboard.</p>
+    <div class="grid">
+      <div class="card"><div class="ico">📈</div><h3 data-t="f1t">Level progression 1 → 60</h3><p data-t="f1">Level missions and pirate trials in the right order: it knows who gives each mission, where to go, what to sink or collect and where to hand it in.</p></div>
+      <div class="card"><div class="ico">📜</div><h3 data-t="f2t">Daily missions</h3><p data-t="f2">Tick the daily missions you want; it takes them from the contractors, completes them and hands them in, one after another.</p></div>
+      <div class="card"><div class="ico">🗺</div><h3 data-t="f3t">Bonus maps</h3><p data-t="f3">Make your own list — which maps, how many of each and in what order. It enters, clears every wave and moves to the next one.</p></div>
+      <div class="card"><div class="ico">⚔</div><h3 data-t="f4t">Smart combat</h3><p data-t="f4">Picks the closest target, closes in when it is out of range, switches target when the current one is gone and never wastes time on a ship it cannot hit.</p></div>
+      <div class="card"><div class="ico">🧰</div><h3 data-t="f5t">Chests &amp; glitter</h3><p data-t="f5">Collects the chests and glitters you choose, including the special ones your missions ask for.</p></div>
+      <div class="card"><div class="ico">🧪</div><h3 data-t="f6t">Items when you need them</h3><p data-t="f6">Uses your items automatically — in fights, while sailing or only on bonus maps — with the interval you set.</p></div>
+      <div class="card"><div class="ico">⚓</div><h3 data-t="f7t">Repairs &amp; recovery</h3><p data-t="f7">Repairs when needed, comes back after being sunk, logs back in after a disconnect and closes the pop-ups that get in the way.</p></div>
+      <div class="card"><div class="ico">🖥</div><h3 data-t="f8t">Any screen, any account</h3><p data-t="f8">Works with any window size, zoom and layout of the game windows, on any account. English and Romanian panel.</p></div>
+      <div class="card"><div class="ico">🔄</div><h3 data-t="f9t">Always up to date</h3><p data-t="f9">New versions install themselves when you start the program. Problems are reported automatically so they get fixed fast (you can turn this off).</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2 data-t="iTitle">Install in 2 minutes</h2>
+    <p class="lead" data-t="iLead">No installer, nothing to configure in Windows.</p>
+    <ol class="steps">
+      <li data-t="i1">Download the zip with the button above and extract it anywhere (for example on your Desktop).</li>
+      <li data-t="i2">Open the “Kraken Bot” folder and start <b>Kraken Bot.exe</b>.</li>
+      <li data-t="i3">Log in to Seafight in the window that opens, as you normally do in your browser.</li>
+      <li data-t="i4">In the panel, write your ship name (Settings), pick what the bot should do (Home) and press <b>START</b>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <div class="faq">
+      <details><summary data-t="q1">How does it play?</summary><p data-t="a1">Like a player sitting at the computer: it clicks and presses keys in the game window. It does not change the game and does not send anything to the server by itself.</p></details>
+      <details><summary data-t="q2">Does it need my password?</summary><p data-t="a2">No. You log in yourself, in the program's own window. The bot never reads or stores your password.</p></details>
+      <details><summary data-t="q3">Can I use my computer while it runs?</summary><p data-t="a3">The game window needs to stay open. It works best when you leave it running on its own.</p></details>
+      <details><summary data-t="q4">How do I update?</summary><p data-t="a4">You don't have to: every time you start it, it checks for a new version and installs it by itself. Your settings stay as they are.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2 data-t="cTitle">Ready to set sail?</h2>
+    <p class="lead" data-t="cLead">Download Kraken Bot, press START and let the Kraken do the work.</p>
+    <a class="btn gold dl" href="#"><span>⬇</span> <span data-t="download">Download for Windows</span></a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>© Kraken Bot</p>
+    <p data-t="foot">Kraken Bot is an independent program and is not affiliated with or endorsed by the makers of Seafight.</p>
+  </div>
+</footer>
+
+<script>
+  // butonul Download duce mereu la ultima versiune publicată pe GitHub (arhiva de instalare, nume fix)
+  const DEPOZIT = "krakenbot-seafight/kraken-bot-update";
+  const LINK = `https://github.com/${DEPOZIT}/releases/latest/download/Kraken-Bot-instalare.zip`;
+  document.querySelectorAll("a.dl").forEach((a) => (a.href = LINK));
+  fetch(`https://api.github.com/repos/${DEPOZIT}/releases/latest`).then((r) => (r.ok ? r.json() : null)).then((r) => {
+    if (r && r.tag_name) document.querySelector(".ver").textContent = "v" + String(r.tag_name).replace(/^v/i, "");
+  }).catch(() => {});
+
+  const RO = {
+    nFeatures: "Ce face", nInstall: "Instalare", nFaq: "Întrebări",
+    sub: "Pilotul tău automat pentru Seafight. Apeși START și navighează, luptă, strânge și termină misiunile pentru tine — oră după oră.",
+    download: "Descarcă pentru Windows", meta: "Windows 10 / 11 · 64 de biți · actualizări gratuite",
+    fTitle: "Ce face", fLead: "Tot ce ai face tu, făcut la fel cum face un jucător: cu mouse-ul și tastatura.",
+    f1t: "Progresie de la nivelul 1 la 60", f1: "Misiunile de nivel și probele de pirat, în ordinea bună: știe cine dă fiecare misiune, unde să meargă, ce să scufunde sau să strângă și unde o predă.",
+    f2t: "Misiuni zilnice", f2: "Bifezi misiunile zilnice pe care le vrei; le ia de la contractori, le face și le predă, una după alta.",
+    f3t: "Hărți bonus", f3: "Îți faci lista ta — ce hărți, câte din fiecare și în ce ordine. Intră, curăță fiecare val și trece la următoarea.",
+    f4t: "Luptă inteligentă", f4: "Alege ținta cea mai apropiată, se apropie când nu e în rază, schimbă ținta când a dispărut și nu pierde timp pe o navă în care nu poate trage.",
+    f5t: "Cufere și luminițe", f5: "Strânge cuferele și luminițele pe care le alegi, inclusiv cele speciale cerute de misiuni.",
+    f6t: "Iteme când ai nevoie", f6: "Folosește singur itemele tale — în luptă, în mers sau doar pe hărțile bonus — la intervalul ales de tine.",
+    f7t: "Reparare și revenire", f7: "Repară când e nevoie, revine după scufundare, se reloghează după o deconectare și închide ferestrele care încurcă.",
+    f8t: "Orice ecran, orice cont", f8: "Merge la orice mărime de fereastră, zoom și așezare a ferestrelor jocului, pe orice cont. Panou în engleză și română.",
+    f9t: "Mereu la zi", f9: "Versiunile noi se instalează singure când pornești programul. Problemele se raportează automat, ca să fie reparate repede (le poți opri).",
+    iTitle: "Instalare în 2 minute", iLead: "Fără instalator, nimic de configurat în Windows.",
+    i1: "Descarci arhiva cu butonul de sus și o dezarhivezi oriunde (de exemplu pe Desktop).",
+    i2: "Deschizi folderul „Kraken Bot” și pornești <b>Kraken Bot.exe</b>.",
+    i3: "Te loghezi în Seafight în fereastra care se deschide, ca de obicei în browser.",
+    i4: "În panou scrii numele navei tale (Setări), alegi ce să facă botul (Pornire) și apeși <b>START</b>.",
+    q1: "Cum joacă?", a1: "Ca un jucător care stă la calculator: dă click și apasă taste în fereastra jocului. Nu modifică jocul și nu trimite singur nimic la server.",
+    q2: "Are nevoie de parola mea?", a2: "Nu. Te loghezi tu, în fereastra programului. Botul nu citește și nu păstrează parola.",
+    q3: "Pot folosi calculatorul cât merge?", a3: "Fereastra jocului trebuie să rămână deschisă. Merge cel mai bine când îl lași singur.",
+    q4: "Cum îl actualizez?", a4: "Nu trebuie: la fiecare pornire verifică dacă e o versiune nouă și o pune singur. Setările tale rămân cum sunt.",
+    cTitle: "Gata de plecare?", cLead: "Descarci Kraken Bot, apeși START și lași Kraken-ul să muncească.",
+    foot: "Kraken Bot este un program independent, fără legătură cu producătorii jocului Seafight.",
+  };
+  const EN = {};
+  document.querySelectorAll("[data-t]").forEach((e) => (EN[e.dataset.t] = e.innerHTML));
+  function limba(l) {
+    const d = l === "ro" ? RO : EN;
+    document.querySelectorAll("[data-t]").forEach((e) => { if (d[e.dataset.t]) e.innerHTML = d[e.dataset.t]; });
+    document.documentElement.lang = l;
+    document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.l === l));
+    try { localStorage.setItem("limba", l); } catch {}
+  }
+  document.querySelectorAll(".lang button").forEach((b) => (b.onclick = () => limba(b.dataset.l)));
+  let start = "en";
+  try { start = localStorage.getItem("limba") || ((navigator.language || "").startsWith("ro") ? "ro" : "en"); } catch {}
+  if (start === "ro") limba("ro");
+</script>
+</body>
+</html>
